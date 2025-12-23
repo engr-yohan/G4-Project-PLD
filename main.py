@@ -1,10 +1,12 @@
 import tkinter as tk
-from tkinter import messagebox, simpledialog, ttk
 import re
+from tkinter import messagebox, simpledialog, ttk
+from database import initialize_database, add_contact, get_all_contacts, update_contact, delete_contact
 
 class AddressBook:
     def __init__(self):
-        self.contacts = [] # List of dictionaries: {"first": str, "last":str, "address":str, "number":str}
+        initialize_database()
+        self.contacts = get_all_contacts()
         self.max_entries = 100
 
         self. root = tk.Tk()
@@ -113,6 +115,7 @@ class AddressBook:
                 return
                 
             self.contacts.append({"first": first.strip(), "last": last.strip(), "address": address.strip(), "number": number.strip()})
+            add_contact(first.strip(), last.strip(), address.strip(), number.strip())
             messagebox.showinfo("Success", "Contact added successfully.")
             add_win.destroy()
 
@@ -178,6 +181,7 @@ class AddressBook:
                 return
 
             self.contacts[num-1] = {"first": first.strip(), "last": last.strip(), "address": address.strip(), "number": number.strip()}
+            update_contact(contact["id"], first.strip(), last.strip(), address.strip(), number.strip())
             messagebox.showinfo("Success", "Contact edited successfully.")
             edit_win.destroy()
 
@@ -195,7 +199,10 @@ class AddressBook:
         
         confirm = messagebox.askyesno("Confirm", f"Contact deleted successfully.")
         if confirm:
+            contact_id = self.contacts[num-1].get("id")
             del self.contacts[num-1]
+            if contact_id:
+                delete_contact(contact_id)
             messagebox.showinfo("Success", "Contact deleted successfully.")
 
     def view_contacts(self):
