@@ -9,41 +9,38 @@ class AddressBook:
         self.contacts = get_all_contacts()
         self.max_entries = 100
 
-        self. root = tk.Tk()
-        self.root.title ("Group 4 Address Book")
+        self.root = tk.Tk()
+        self.root.title("Group 4 Address Book")
         self.root.geometry("600x400")
-        self.root.configure(bg ="#800000") # Maroon background
+        self.root.configure(bg="#800000")  # Maroon background
 
         # Style for buttons
         style = ttk.Style()
-        style.configure("TButton", background="#FFD700", foreground="#800000", font=("Arial", 10,"bold"))
+        style.configure("TButton", background="#FFD700", foreground="#800000", font=("Arial", 10, "bold"))
 
         # Main Frame
-        main_frame = tk.Frame(self.root, bg="#800000")
-        main_frame.pack(pady=20)
+        self.content_frame = tk.Frame(self.root, bg="#800000")
+        self.content_frame.pack(expand=True, fill=tk.BOTH)
 
-        # Title label
-        title_label = tk.Label(main_frame, text= "Address Book", font=("Arial", 20, "bold"), bg="#800000", fg="#FFD700")
-        title_label.pack(pady=10)
+        # Menu
+        self.show_home()
 
-        # Buttons
-        self.add_btn = ttk.Button(main_frame, text="Add Contact", command=self.add_contact)
-        self.add_btn.pack(pady=5)
+    def clear_content(self):
+        for child in self.content_frame.winfo_children():
+            child.destroy()
 
-        self.edit_btn = ttk.Button(main_frame, text="Edit Contact", command=self.edit_contact)
-        self.edit_btn.pack (pady=5)
+    def show_home(self):
+        self.clear_content()
 
-        self.delete_btn = ttk.Button(main_frame, text="Delete Contact", command=self.delete_contact)
-        self.delete_btn.pack(pady=5)
+        title_label = tk.Label(self.content_frame, text="Address Boook", font=("Arial", 20, "bold"), bg="#800000", fg="#FFD700",)
+        title_label.pack(pady=20)
 
-        self.view_btn = ttk.Button(main_frame, text="View Contacts", command=self.view_contacts)
-        self.view_btn.pack(pady=5)
-
-        self.search_btn = ttk.Button(main_frame, text="Search Contacts", command=self.search_contacts)
-        self.search_btn.pack(pady=5)
-
-        self.exit_btn = ttk.Button(main_frame, text="Exit", command=self.exit_app)
-        self.exit_btn.pack(pady=5)
+        ttk.Button(self.content_frame, text="Add Contact", command=self.add_contact).pack(pady=5)
+        ttk.Button(self.content_frame, text="Edit Contact", command=self.edit_contact).pack(pady=5)
+        ttk.Button(self.content_frame, text="Delete Contact", command=self.delete_contact).pack(pady=5)
+        ttk.Button(self.content_frame, text="View Contacts", command=self.view_contacts).pack(pady=5)
+        ttk.Button(self.content_frame, text="search Contacts", command=self.search_contacts).pack(pady=5)
+        ttk.Button(self.content_frame, text="Exit", command=self.exit_app).pack(pady=20)
 
     def validate_name(self, name):
             """Validate name: not empy, only letters and spaces."""
@@ -70,28 +67,29 @@ class AddressBook:
         if len(self.contacts) >= self.max_entries:
             messagebox.showerror("Error", "Address book is full (max 100 entries).")
             return
-            
-        add_win = tk.Toplevel(self.root)
-        add_win.title("Add Contact")
-        add_win.configure(bg="#800000")
-        add_win.geometry("400x300")
+        
+        self.clear_content()
 
-        # Labels and entries
-        tk.Label(add_win, text="First Name:", bg="#800000", fg="#FFD700"). pack(pady=5)
-        first_entry = tk.Entry(add_win)
-        first_entry.pack()
+        tk.Label(self.content_frame, text="Add Contact", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
 
-        tk.Label(add_win, text="Last Name:", bg="#800000", fg="#FFD700").pack(pady=5)
-        last_entry = tk.Entry(add_win)
-        last_entry.pack()
+        form_frame = tk.Frame(self.content_frame, bg="#800000")
+        form_frame.pack(pady=10)
 
-        tk.Label(add_win, text="Address:", bg="#800000", fg="#FFD700").pack(pady=5)
-        address_entry = tk.Entry(add_win)
-        address_entry.pack()
+        tk.Label(form_frame, text="First Name:", bg="#800000", fg="#FFD700").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        first_entry = tk.Entry(form_frame)
+        first_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        tk.Label(add_win, text="Contact Number:", bg="#800000", fg="#FFD700").pack(pady=5)
-        number_entry = tk.Entry(add_win)
-        number_entry.pack()
+        tk.Label(form_frame, text="Last Name:", bg="#800000", fg="#FFD700").grid(row=1, column=0, sticky="e", padx=5,pady=5)
+        last_entry = tk.Entry(form_frame)
+        last_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        tk.Label(form_frame, text="Address:", bg="#800000", fg="#FFD700").grid(row=2, column=0, sticky="e", padx=5, pady=5)
+        address_entry = tk.Entry(form_frame)
+        address_entry.grid(row=2, column=1, padx=5, pady=5)
+
+        tk.Label(form_frame, text="Contact Number:", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        number_entry = tk.Entry(form_frame)
+        number_entry.grid(row=3, column=1, padx=5, pady=5)
 
         def submit():
             first = first_entry.get()
@@ -117,49 +115,80 @@ class AddressBook:
             add_contact(first.strip(), last.strip(), address.strip(), number.strip())
             self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact added successfully.")
-            add_win.destroy()
+            self.show_home()
 
-        ttk.Button(add_win, text="Add", command=submit).pack(pady=10)
+        action_frame = tk.Frame(self.content_frame, bg="#800000")
+        action_frame.pack(pady=10)
+        ttk.Button(action_frame, text="Add", command=submit).grid(row=0, column=0, padx=5)
+        ttk.Button(action_frame, text= "Back", command=self.show_home).grid(row=0, column=1, padx=5)
 
     def edit_contact(self):
         if not self.contacts:
             messagebox.showerror("Error", "No contacts to edit.")
             return
+        
+        self.clear_content()
 
-        num = simpledialog.askinteger("Edit Contact", f"Enter entry number to edit (1-{len(self.contacts)}):")
-        if num is None or not (1 <= num <= len(self.contacts)):
-            messagebox.showerror("Error", "Invalid entry number.")
-            return
+        tk.Label(self.content_frame, text="Edit Contact", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
 
-        contact = self.contacts[num-1]
+        # Contact Selection
+        select_frame = tk.Frame(self.content_frame, bg="#800000")
+        select_frame.pack(pady=5)
 
-        edit_win = tk.Toplevel(self.root)
-        edit_win.title("Edit Contact")
-        edit_win.configure(bg="#800000")
-        edit_win.geometry("400x300")
+        tk.Label(select_frame, text= "Select Contact:", bg="#800000", fg="#FFD700").grid(row=0, column=0, padx=5, pady=5)
+        options = [f"{i+1}. {c['first']} {c['last']}" for i, c in enumerate(self.contacts)]
+        selected_label = tk.StringVar(value=options[0])
+        combo = ttk.Combobox(select_frame, textvariable=selected_label, values=options, state="readonly")
+        combo.grid(row=0, column=1, padx=5, pady=5)
 
-        # Labels and Entries with prefilled data
-        tk.Label(edit_win, text="First Name:", bg="#800000", fg="#FFD700").pack(pady=5)
-        first_entry = tk.Entry(edit_win)
-        first_entry.insert(0, contact["first"])
-        first_entry.pack()
+        # Prefilled Form
+        form_frame = tk.Frame(self.content_frame, bg="#800000")
+        form_frame.pack(pady=10)
 
-        tk.Label(edit_win, text="Last Name:", bg="#800000", fg="#FFD700").pack(pady=5)
-        last_entry = tk.Entry(edit_win)
-        last_entry.insert(0, contact["last"])
-        last_entry.pack()
+        tk.Label(form_frame, text="First Name:", bg="#800000", fg="#FFD700").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        first_entry = tk.Entry(form_frame)
+        first_entry.grid(row=0, column=1, padx=5, pady=5)
 
-        tk.Label(edit_win, text="Address:", bg="#800000", fg="#FFD700").pack(pady=5)
-        address_entry = tk.Entry(edit_win)
-        address_entry.insert(0, contact["address"])
-        address_entry.pack()
+        tk.Label(form_frame, text="Last Name:", bg="#800000", fg="#FFD700").grid(row=1, column=0, sticky="e", padx=5, pady=5)
+        last_entry = tk.Entry(form_frame)
+        last_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        tk.Label(edit_win, text="Contact Number:", bg="#800000", fg="#FFD700").pack(pady=5)
-        number_entry = tk.Entry(edit_win)
-        number_entry.insert(0, contact["number"])
-        number_entry.pack()
+        tk.Label(form_frame, text="Address:", bg="#800000", fg="#FFD700").grid(row=2, column=0, sticky="e", padx=5, pady=5)
+        address_entry = tk.Entry(form_frame)
+        address_entry.grid(row=2, column=1, padx=5, pady=5)
+
+        tk.Label(form_frame, text="Contact Number:", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        number_entry = tk.Entry(form_frame)
+        number_entry.grid(row=3, column=1, padx=5, pady=5)
+
+        # Initial form with first contact
+        def populate_form(index):
+            contact = self.contacts[index]
+            first_entry.delete(0, tk.END)
+            first_entry.insert(0, contact["first"])
+            last_entry.delete(0, tk.END)
+            last_entry.insert(0, contact["last"])
+            address_entry.delete(0, tk.END)
+            address_entry.insert(0, contact["address"])
+            number_entry.delete(0, tk.END)
+            number_entry.insert(0, contact["number"])
+
+        current_index = 0
+        populate_form(current_index)
+
+        def on_select(_event):
+            nonlocal current_index
+            label = selected_label.get()
+            try:
+                current_index = options.index(label)
+            except ValueError:
+                current_index = 0
+            populate_form(current_index)
+
+        combo.bind("<<ComboboxSelected>>", on_select)
 
         def submit():
+            contact = self.contacts[current_index]
             first = first_entry.get()
             last = last_entry.get()
             address = address_entry.get()
@@ -174,7 +203,7 @@ class AddressBook:
             if not (valid_first and valid_last and valid_address and valid_number):
                 error_msg = ""
                 if not valid_first: error_msg += msg_first + "\n"
-                if not valid_last: error_msg += msg_last +"\n"
+                if not valid_last: error_msg += msg_last + "\n"
                 if not valid_address: error_msg += msg_address + "\n"
                 if not valid_number: error_msg += msg_number + "\n"
                 messagebox.showerror("Validation Error", error_msg)
@@ -183,9 +212,12 @@ class AddressBook:
             update_contact(contact["id"], first.strip(), last.strip(), address.strip(), number.strip())
             self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact edited successfully.")
-            edit_win.destroy()
+            self.show_home()
 
-        ttk.Button(edit_win, text="Save", command=submit).pack(pady=10)
+        action_frame = tk.Frame(self.content_frame, bg="#800000")
+        action_frame.pack(pady=10)
+        ttk.Button(action_frame, text="Save", command=submit).grid(row=0, column=0, padx=5)
+        ttk.Button(action_frame, text="Back", command=self.show_home).grid(row=0, column=1, padx=5)
 
     def delete_contact(self):
         if not self.contacts:
@@ -209,13 +241,14 @@ class AddressBook:
                 messagebox.showerror("Error", "Cannot delete: missing contact ID. Try viewing contacts and deleting again.")
 
     def view_contacts(self):
-        view_win = tk.Toplevel(self.root)
-        view_win.title("View Contacts")
-        view_win.configure(bg="#800000")
-        view_win.geometry("600x400")
+        self.clear_content()
 
-        text = tk.Text(view_win, bg="#FFD700", fg="#800000", font=("Arial", 10))
-        text.pack(expand=True, fill=tk.BOTH)
+        tk.Label(self.content_frame, text="View Contacts", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
+
+        text = tk.Text(self.content_frame, bg="#FFD700", fg="#800000", font=("Arial", 10))
+        text.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+
+        self.contacts = get_all_contacts()
 
         if not self.contacts:
             text.insert(tk.END, "No contacts in the address book.")
@@ -224,31 +257,41 @@ class AddressBook:
                 text.insert(tk.END, f"{i}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
             
         text.config(state=tk.DISABLED)
+
+        ttk.Button(self.content_frame, text="Back", command=self.show_home).pack(pady=10)
     
     def search_contacts(self):
         if not self.contacts:
             messagebox.showerror("Error", "No contacts to search.")
             return
         
-        search_win = tk.Toplevel(self.root)
-        search_win.title("Search Contacts")
-        search_win.configure(bg="#800000")
-        search_win.geometry("400x200")
+        self.clear_content()
 
-        tk.Label(search_win, text="Search by:", bg="#800000", fg="#FFD700").pack(pady=5)
+        tk.Label(self.content_frame, text="Search Contacts", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
+
+        controls = tk.Frame(self.content_frame, bg="#800000")
+        controls.pack(pady=5)
+
+        tk.Label(controls, text="Search by:", bg="#800000", fg="#FFD700").grid(row=0, column=0, padx=5, pady=5, sticky="e")
         search_type = tk.StringVar(value="first")
-        ttk.Combobox(search_win, textvariable=search_type, values=["first", "last", "address", "number"]).pack()
+        ttk.Combobox(controls, textvariable=search_type, values=["first", "last", "address", "number"], state="readonly").grid(row=0, column=1, padx=5, pady=5)
 
-        tk.Label(search_win, text="Query:", bg="#800000", fg="#FFD700").pack(pady=5)
-        query_entry = tk.Entry(search_win)
-        query_entry.pack()
+        tk.Label(controls, text="Query:", bg="#800000", fg="#FFD700").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        query_entry = tk.Entry(controls)
+        query_entry.grid(row=1, column=1, padx=5, pady=5)
 
-        def submit ():
+        results_text = tk.Text(self.content_frame, bg="#FFD700", fg="#800000", font=("Arial", 10))
+        results_text.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        results_text.config(state=tk.DISABLED)
+
+        def submit():
             stype = search_type.get()
             query = query_entry.get().strip().lower()
             if not query:
                 messagebox.showerror("Error", "Query cannot be empty.")
                 return
+            
+            self.contacts = get_all_contacts()
             
             results = []
             for i, contact in enumerate(self.contacts, 1):
@@ -261,27 +304,22 @@ class AddressBook:
                 elif stype == "number" and query in contact["number"].lower():
                     results.append((i, contact))
                 
-            search_win.destroy()
+            results_text.config(state=tk.NORMAL)
+            results_text.delete("1.0", tk.END)
 
             if not results:
                 messagebox.showinfo("No Results", "No contacts match the query.")
-                return
+            else:
+                for num, contact in results:
+                    results_text.insert(tk.END,f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
             
-            result_win = tk.Toplevel(self.root)
-            result_win.title("Search Results")
-            result_win.configure(bg="#800000")
-            result_win.geometry("600x400")
+            results_text.config(state=tk.DISABLED)
 
-            text = tk.Text(result_win, bg="#FFD700", fg="#800000", font=("Arial", 10))
-            text.pack(expand=True, fill=tk.BOTH)
-
-            for num, contact in results:
-                text.insert(tk.END, f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
-
-            text.config(state=tk.DISABLED)
-
-        ttk.Button(search_win, text="Search", command=submit).pack(pady=10)
-
+        actions = tk.Frame(self.content_frame, bg="#800000")
+        actions.pack(pady=5)
+        ttk.Button(actions, text="Search", command=submit).grid(row=0, column=0, padx=5)
+        ttk.Button(actions, text="Back", command=self.show_home).grid(row=0, column=1, padx=5)
+        
     def exit_app(self):
         self.root.quit()
 
