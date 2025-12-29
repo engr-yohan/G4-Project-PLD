@@ -114,8 +114,8 @@ class AddressBook:
                 messagebox.showerror("Validation Error", error_msg)
                 return
                 
-            self.contacts.append({"first": first.strip(), "last": last.strip(), "address": address.strip(), "number": number.strip()})
             add_contact(first.strip(), last.strip(), address.strip(), number.strip())
+            self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact added successfully.")
             add_win.destroy()
 
@@ -149,7 +149,7 @@ class AddressBook:
         last_entry.insert(0, contact["last"])
         last_entry.pack()
 
-        tk.Label(edit_win, text="Address:", bg="#800000", fg="FFD700").pack(pady=5)
+        tk.Label(edit_win, text="Address:", bg="#800000", fg="#FFD700").pack(pady=5)
         address_entry = tk.Entry(edit_win)
         address_entry.insert(0, contact["address"])
         address_entry.pack()
@@ -169,7 +169,7 @@ class AddressBook:
             valid_first, msg_first = self.validate_name(first)
             valid_last, msg_last = self.validate_name(last)
             valid_address, msg_address = self.validate_address(address)
-            valid_number, msg_number = self. validate_number(number)
+            valid_number, msg_number = self.validate_number(number)
 
             if not (valid_first and valid_last and valid_address and valid_number):
                 error_msg = ""
@@ -180,8 +180,8 @@ class AddressBook:
                 messagebox.showerror("Validation Error", error_msg)
                 return
 
-            self.contacts[num-1] = {"first": first.strip(), "last": last.strip(), "address": address.strip(), "number": number.strip()}
             update_contact(contact["id"], first.strip(), last.strip(), address.strip(), number.strip())
+            self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact edited successfully.")
             edit_win.destroy()
 
@@ -197,13 +197,16 @@ class AddressBook:
             messagebox.showerror("Error", "Invalid entry number.")
             return
         
-        confirm = messagebox.askyesno("Confirm", f"Contact deleted successfully.")
+        contact = self.contacts[num-1]
+        confirm = messagebox.askyesno("Confirm Delete", f"Delete contact: {contact['first']} {contact['last']}?")
         if confirm:
-            contact_id = self.contacts[num-1].get("id")
-            del self.contacts[num-1]
-            if contact_id:
+            contact_id = contact.get("id")
+            if contact_id is not None:
                 delete_contact(contact_id)
-            messagebox.showinfo("Success", "Contact deleted successfully.")
+                self.contacts = get_all_contacts()
+                messagebox.showinfo("Success", "Contact deleted successfully.")
+            else:
+                messagebox.showerror("Error", "Cannot delete: missing contact ID. Try viewing contacts and deleting again.")
 
     def view_contacts(self):
         view_win = tk.Toplevel(self.root)
@@ -218,7 +221,7 @@ class AddressBook:
             text.insert(tk.END, "No contacts in the address book.")
         else:
             for i, contact in enumerate(self.contacts, 1):
-                text.insert(tk.END, f"{i}. {contact["first"]} {contact["last"]}\n Address: {contact["address"]}\n Number: {contact["number"]}\n\n")
+                text.insert(tk.END, f"{i}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
             
         text.config(state=tk.DISABLED)
     
@@ -232,7 +235,7 @@ class AddressBook:
         search_win.configure(bg="#800000")
         search_win.geometry("400x200")
 
-        tk.Label(search_win, text="Search by:", bg="#800000", fg="FFD700").pack(pady=5)
+        tk.Label(search_win, text="Search by:", bg="#800000", fg="#FFD700").pack(pady=5)
         search_type = tk.StringVar(value="first")
         ttk.Combobox(search_win, textvariable=search_type, values=["first", "last", "address", "number"]).pack()
 
@@ -273,7 +276,7 @@ class AddressBook:
             text.pack(expand=True, fill=tk.BOTH)
 
             for num, contact in results:
-                text.insert(tk.END, f"{num}. {contact["first"]}\n Address: {contact["address"]}\n Number: {contact["number"]}\n\n")
+                text.insert(tk.END, f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
 
             text.config(state=tk.DISABLED)
 

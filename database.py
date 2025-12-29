@@ -70,9 +70,9 @@ def update_contact(contact_id, first_name, last_name, address, phone_number):
 
 def delete_contact(contact_id):
     conn = get_connection()
+    
     cursor = conn.cursor()
-
-    cursor.execute('DELETE FROM contacts WHERE id = ?', (contact_id))
+    cursor.execute('DELETE FROM contacts WHERE id = ?', (contact_id,))
 
     conn.commit()
     conn.close()
