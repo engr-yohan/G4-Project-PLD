@@ -1,16 +1,26 @@
-# G4-Project-PLD
+# Address Book
 
-This project is an address book that contains only 100 contacts, where you can add, edit, delete, view, and search.
-The engineer's goal is to apply the knowledge from the course Programming Logic and Design (PLD) about Python as a programming language, and to exapand our knowledge through this project.
+This group project is an address book application built primarily in Python, designed to store up to 100 contact entries. It serves as a digital container for essential details like names, addresses, and phone numbers, allowing users to add, manage, and retrieve information. By providing structured access to both input data and output responses, the app offers a simple yet efficient way to organize personal or professional contacts.
 
-## Project Files
-- main.py
-- database.py
-- app_databse.db
-- picture_logo/
-    - picture_1.jpg
-    - picture_2.jpg
-    - picture_3.jpg
-    - picture_4.jpg
-    - picture_5.jpg
-    - picture_6.jpg
+## Installation
+
+### Known Issues
+- edit(): Only the first and last names are available for editing contacts.
+- search(): The function does not operate correctly.
+
+## Project Structure
+```
+G4-Project-PLD/
+├─ main.py
+├─ database.py
+├─ app_database.db
+├─ README.md
+├─ picture_logo/
+│  ├─ picture_1.jpg
+│  ├─ picture_2.jpg
+│  ├─ picture_3.jpg
+│  ├─ picture_4.png
+│  ├─ picture_5.png
+│  └─ picture_6.png
+└─ __pycache__/
+```
