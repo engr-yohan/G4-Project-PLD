@@ -39,7 +39,7 @@ class AddressBook:
         ttk.Button(self.content_frame, text="Edit Contact", command=self.edit_contact).pack(pady=5)
         ttk.Button(self.content_frame, text="Delete Contact", command=self.delete_contact).pack(pady=5)
         ttk.Button(self.content_frame, text="View Contacts", command=self.view_contacts).pack(pady=5)
-        ttk.Button(self.content_frame, text="search Contacts", command=self.search_contacts).pack(pady=5)
+        ttk.Button(self.content_frame, text="Search Contacts", command=self.search_contacts).pack(pady=5)
         ttk.Button(self.content_frame, text="Exit", command=self.exit_app).pack(pady=20)
 
     def validate_name(self, name):
