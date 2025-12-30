@@ -5,10 +5,7 @@ This group project is an address book application built primarily in Python, des
 ## Installation
 
 ### Known Issues
-- **edit()**: Only the first and last names are available for editing contacts.
-- **search()**: In the revision, it does not operate correctly.
 - **delete()**: The data is never shown, and you can only remove entries by knowing their designated number in the address book.
-- **view()**: There is no "back" option, so you must exit to return to the home screen.
 
 ## Project Structure
 ```
