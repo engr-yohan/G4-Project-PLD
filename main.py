@@ -100,7 +100,7 @@ class AddressBook:
         address_entry = tk.Entry(form_frame)
         address_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        tk.Label(form_frame, text="Contact Number (11 digits):", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        tk.Label(form_frame, text="Contact Number:", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
         number_entry = tk.Entry(form_frame, validate="key")
         number_entry.configure(validatecommand=self._phone_vcmd)
         number_entry.grid(row=3, column=1, padx=5, pady=5)
@@ -172,7 +172,7 @@ class AddressBook:
         address_entry = tk.Entry(form_frame)
         address_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        tk.Label(form_frame, text="Contact Number (11 digits):", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        tk.Label(form_frame, text="Contact Number:", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
         number_entry = tk.Entry(form_frame, validate="key")
         number_entry.configure(validatecommand=self._phone_vcmd)
         number_entry.grid(row=3, column=1, padx=5, pady=5)
@@ -265,8 +265,17 @@ class AddressBook:
 
         tk.Label(self.content_frame, text="View Contacts", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
 
-        text = tk.Text(self.content_frame, bg="#FFD700", fg="#800000", font=("Arial", 10))
-        text.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
+        # Scrollable text area
+        text_frame = tk.Frame(self.content_frame, bg="#800000")
+        text_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=(0, 5))
+
+        scrollbar = tk.Scrollbar(text_frame)
+        scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+
+        text = tk.Text(text_frame, bg="#FFD700", fg="#800000", font=("Arial", 10), height=15, yscrollcommand=scrollbar.set)
+        text.pack(side=tk.LEFT, expand=True, fill=tk.BOTH)
+
+        scrollbar.config(command=text.yview)
 
         self.contacts = get_all_contacts()
 
@@ -294,12 +303,12 @@ class AddressBook:
         controls.pack(pady=5)
 
         tk.Label(controls, text="Search by:", bg="#800000", fg="#FFD700").grid(row=0, column=0, padx=5, pady=5, sticky="e")
-        search_type = tk.StringVar(value="first")
-        ttk.Combobox(controls, textvariable=search_type, values=["first", "last", "address", "number"], state="readonly").grid(row=0, column=1, padx=5, pady=5)
+        search_type = tk.StringVar(value="first name")
+        ttk.Combobox(controls, textvariable=search_type, values=["first name", "last name", "address", "contact number"], state="readonly").grid(row=0, column=1, padx=5, pady=5)
 
-        tk.Label(controls, text="Query:", bg="#800000", fg="#FFD700").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        tk.Label(controls, text="Query:", bg="#800000", fg="#FFD700").grid(row=0, column=2, padx=5, pady=5, sticky="e")
         query_entry = tk.Entry(controls)
-        query_entry.grid(row=1, column=1, padx=5, pady=5)
+        query_entry.grid(row=0, column=3, padx=5, pady=5)
 
         results_text = tk.Text(self.content_frame, bg="#FFD700", fg="#800000", font=("Arial", 10))
         results_text.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
@@ -317,13 +326,13 @@ class AddressBook:
             
             results = []
             for i, contact in enumerate(self.contacts, 1):
-                if stype == "first" and query in contact["first"].lower():
+                if stype == "first name" and query in contact["first"].lower():
                     results.append((i, contact))
-                elif stype == "last" and query in contact["last"].lower():
+                elif stype == "last name" and query in contact["last"].lower():
                     results.append((i, contact))
                 elif stype == "address" and query in contact["address"].lower():
                     results.append((i, contact))
-                elif stype == "number":
+                elif stype == "contact number":
                     sanitized = self._sanitize_number(contact["number"])
                     if query_digits and query_digits in sanitized:
                         results.append((i, contact))
@@ -340,10 +349,8 @@ class AddressBook:
             
             results_text.config(state=tk.DISABLED)
 
-        actions = tk.Frame(self.content_frame, bg="#800000")
-        actions.pack(pady=5)
-        ttk.Button(actions, text="Search", command=submit).grid(row=0, column=0, padx=5)
-        ttk.Button(actions, text="Back", command=self.show_home).grid(row=0, column=1, padx=5)
+        ttk.Button(controls, text="Search", command=submit).grid(row=0, column=4, padx=5)
+        ttk.Button(controls, text="Back", command=self.show_home).grid(row=0, column=5, padx=5)
         
     def exit_app(self):
         self.root.quit()
