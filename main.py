@@ -44,7 +44,6 @@ class AddressBook:
     def _load_logo(self):
         candidates = [
             os.path.join(os.path.dirname(__file__), "picture_logo", "picture_7.png"),
-            os.path.join(os.path.dirname(__file__), "picture_logo", "picture7.png"),
         ]
         for path in candidates:
             try:
@@ -61,8 +60,6 @@ class AddressBook:
         w, h = self.logo_original.width(), self.logo_original.height()
         if w <= max_width and h <= max_height:
             return self.logo_original
-        
-        # Ceiling
         fw = (w + max_width - 1) // max_width
         fh = (h + max_height - 1) // max_height
         factor = max(fw, fh)
