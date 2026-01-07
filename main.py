@@ -25,6 +25,9 @@ class AddressBook:
         # Menu
         self.show_home()
 
+        # Phone number validation (digits only, max 11)
+        self._phone_vcmd = (self.root.register(self._phone_validate), "%P")
+
     def clear_content(self):
         for child in self.content_frame.winfo_children():
             child.destroy()
@@ -43,26 +46,36 @@ class AddressBook:
         ttk.Button(self.content_frame, text="Exit", command=self.exit_app).pack(pady=20)
 
     def validate_name(self, name):
-            """Validate name: not empy, only letters and spaces."""
-            if not name.strip():
-                return False, "Name cannot be empty."
-            if not re.match(r"^[a-zA-Z\s]+$", name):
-                return False, "Name must contain only letters and spaces."
-            return True, ""
+        """Validate name: not empy, only letters and spaces."""
+        if not name.strip():
+            return False, "Name cannot be empty."
+        if not re.match(r"^[a-zA-Z\s]+$", name):
+            return False, "Name must contain only letters and spaces."
+        return True, ""
         
     def validate_address(self, address):
-            """validate address: not empty."""
-            if not address.strip():
-                return False, "Address cannot be empty."
-            return True, ""
+        """validate address: not empty."""
+        if not address.strip():
+            return False, "Address cannot be empty."
+        return True, ""
         
     def validate_number(self, number):
-            """Validate contact number: 11 digits, allowing dashes, spaces, parenthesis."""
-            cleaned = re.sub(r"[^\d]", "", number)
-            if not 10 <= len(cleaned) <= 15:
-                return False, " Contact number must be 11 digits."
-            return True, ""
-        
+        """Validate contact number: exactly 11 digits."""
+        cleaned = self._sanitize_number(number)
+        if len(cleaned) != 11:
+            return False, "Contact number must be exactly 11 digits."
+        return True, ""
+    
+    def _phone_validate(self, proposed: str) -> bool:
+        """Validate phone number input"""
+        if proposed == "":
+            return True
+        return proposed.isdigit() and len(proposed) <= 11
+
+    def _sanitize_number(self, number: str) -> str:
+        """Digits only, storage and dispaly consistency"""
+        return re.sub(r"[^\d]", "", number)[:11]   
+
     def add_contact(self):
         if len(self.contacts) >= self.max_entries:
             messagebox.showerror("Error", "Address book is full (max 100 entries).")
@@ -87,8 +100,9 @@ class AddressBook:
         address_entry = tk.Entry(form_frame)
         address_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        tk.Label(form_frame, text="Contact Number:", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
-        number_entry = tk.Entry(form_frame)
+        tk.Label(form_frame, text="Contact Number (11 digits):", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        number_entry = tk.Entry(form_frame, validate="key")
+        number_entry.configure(validatecommand=self._phone_vcmd)
         number_entry.grid(row=3, column=1, padx=5, pady=5)
 
         def submit():
@@ -96,12 +110,13 @@ class AddressBook:
             last = last_entry.get()
             address = address_entry.get()
             number = number_entry.get()
+            sanitized_number = self._sanitize_number(number)
 
             # Validation
             valid_first, msg_first = self.validate_name(first)
             valid_last, msg_last = self.validate_name(last)
             valid_address, msg_address = self.validate_address(address)
-            valid_number, msg_number = self.validate_number(number)
+            valid_number, msg_number = self.validate_number(sanitized_number)
 
             if not (valid_first and valid_last and valid_address and valid_number):
                 error_msg = ""
@@ -112,7 +127,7 @@ class AddressBook:
                 messagebox.showerror("Validation Error", error_msg)
                 return
                 
-            add_contact(first.strip(), last.strip(), address.strip(), number.strip())
+            add_contact(first.strip(), last.strip(), address.strip(), sanitized_number)
             self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact added successfully.")
             self.show_home()
@@ -157,8 +172,9 @@ class AddressBook:
         address_entry = tk.Entry(form_frame)
         address_entry.grid(row=2, column=1, padx=5, pady=5)
 
-        tk.Label(form_frame, text="Contact Number:", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
-        number_entry = tk.Entry(form_frame)
+        tk.Label(form_frame, text="Contact Number (11 digits):", bg="#800000", fg="#FFD700").grid(row=3, column=0, sticky="e", padx=5, pady=5)
+        number_entry = tk.Entry(form_frame, validate="key")
+        number_entry.configure(validatecommand=self._phone_vcmd)
         number_entry.grid(row=3, column=1, padx=5, pady=5)
 
         # Initial form with first contact
@@ -171,7 +187,10 @@ class AddressBook:
             address_entry.delete(0, tk.END)
             address_entry.insert(0, contact["address"])
             number_entry.delete(0, tk.END)
-            number_entry.insert(0, contact["number"])
+
+            # sanitize to digits only and cap at 11 for editing
+            sanitized = self._sanitize_number(contact["number"])
+            number_entry.insert(0, sanitized)
 
         current_index = 0
         populate_form(current_index)
@@ -193,12 +212,13 @@ class AddressBook:
             last = last_entry.get()
             address = address_entry.get()
             number = number_entry.get()
+            sanitized_number = self._sanitize_number(number)
 
             # validation
             valid_first, msg_first = self.validate_name(first)
             valid_last, msg_last = self.validate_name(last)
             valid_address, msg_address = self.validate_address(address)
-            valid_number, msg_number = self.validate_number(number)
+            valid_number, msg_number = self.validate_number(sanitized_number)
 
             if not (valid_first and valid_last and valid_address and valid_number):
                 error_msg = ""
@@ -209,7 +229,7 @@ class AddressBook:
                 messagebox.showerror("Validation Error", error_msg)
                 return
 
-            update_contact(contact["id"], first.strip(), last.strip(), address.strip(), number.strip())
+            update_contact(contact["id"], first.strip(), last.strip(), address.strip(), sanitized_number)
             self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact edited successfully.")
             self.show_home()
@@ -254,7 +274,8 @@ class AddressBook:
             text.insert(tk.END, "No contacts in the address book.")
         else:
             for i, contact in enumerate(self.contacts, 1):
-                text.insert(tk.END, f"{i}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
+                sanitized = self._sanitize_number(contact["number"])
+                text.insert(tk.END, f"{i}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {sanitized}\n\n")
             
         text.config(state=tk.DISABLED)
 
@@ -287,6 +308,7 @@ class AddressBook:
         def submit():
             stype = search_type.get()
             query = query_entry.get().strip().lower()
+            query_digits = self._sanitize_number(query)
             if not query:
                 messagebox.showerror("Error", "Query cannot be empty.")
                 return
@@ -301,8 +323,10 @@ class AddressBook:
                     results.append((i, contact))
                 elif stype == "address" and query in contact["address"].lower():
                     results.append((i, contact))
-                elif stype == "number" and query in contact["number"].lower():
-                    results.append((i, contact))
+                elif stype == "number":
+                    sanitized = self._sanitize_number(contact["number"])
+                    if query_digits and query_digits in sanitized:
+                        results.append((i, contact))
                 
             results_text.config(state=tk.NORMAL)
             results_text.delete("1.0", tk.END)
@@ -311,7 +335,8 @@ class AddressBook:
                 messagebox.showinfo("No Results", "No contacts match the query.")
             else:
                 for num, contact in results:
-                    results_text.insert(tk.END,f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {contact['number']}\n\n")
+                    sanitized = self._sanitize_number(contact["number"])
+                    results_text.insert(tk.END,f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {sanitized}\n\n")
             
             results_text.config(state=tk.DISABLED)
 
