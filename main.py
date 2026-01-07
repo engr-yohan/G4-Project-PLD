@@ -1,5 +1,6 @@
 import tkinter as tk
 import re
+import os
 from tkinter import messagebox, simpledialog, ttk
 from database import initialize_database, add_contact, get_all_contacts, update_contact, delete_contact
 
@@ -13,6 +14,14 @@ class AddressBook:
         self.root.title("Group 4 Address Book")
         self.root.geometry("600x400")
         self.root.configure(bg="#800000")  # Maroon background
+
+        # Logo image
+        self.logo_original = None
+        self.logo_image = None
+        self._load_logo()
+        # Pre-scale to fit nicely above buttons
+        if self.logo_original is not None:
+            self.logo_image = self._get_scaled_logo(max_width=500, max_height=120)
 
         # Style for buttons
         style = ttk.Style()
@@ -32,14 +41,48 @@ class AddressBook:
         for child in self.content_frame.winfo_children():
             child.destroy()
 
+    def _load_logo(self):
+        candidates = [
+            os.path.join(os.path.dirname(__file__), "picture_logo", "picture_7.png"),
+            os.path.join(os.path.dirname(__file__), "picture_logo", "picture7.png"),
+        ]
+        for path in candidates:
+            try:
+                if os.path.exists(path):
+                    self.logo_original = tk.PhotoImage(file=path, master=self.root)
+                    return
+            except Exception:
+                continue
+        self.logo_original = None
+
+    def _get_scaled_logo(self, max_width: int, max_height: int):
+        if self.logo_original is None:
+            return None
+        w, h = self.logo_original.width(), self.logo_original.height()
+        if w <= max_width and h <= max_height:
+            return self.logo_original
+        
+        # Ceiling
+        fw = (w + max_width - 1) // max_width
+        fh = (h + max_height - 1) // max_height
+        factor = max(fw, fh)
+        try:
+            return self.logo_original.subsample(factor, factor)
+        except Exception:
+            return self.logo_original
+
     def show_home(self):
         self.clear_content()
 
-        title_label = tk.Label(self.content_frame, text="Address Book", font=("Arial", 20, "bold"), bg="#800000", fg="#FFD700",)
-        title_label.pack(expand=True, pady=20)
+        if self.logo_image is not None:
+            title_label = tk.Label(self.content_frame, image=self.logo_image, bg="#800000")
+            title_label.pack(expand=True, pady=10)
+        else:
+            title_label = tk.Label(self.content_frame, text="Address Book", font=("Arial", 20, "bold"), bg="#800000", fg="#FFD700",)
+            title_label.pack(expand=True, pady=10)
 
         button_frame = tk.Frame(self.content_frame, bg="#800000")
-        button_frame.pack(expand=True, pady=20)
+        button_frame.pack(expand=True, pady=10)
 
         ttk.Button(button_frame, text="Add Contact", command=self.add_contact).pack(pady=5)
         ttk.Button(button_frame, text="Edit Contact", command=self.edit_contact).pack(pady=5)
