@@ -18,6 +18,8 @@ G4-Project-PLD/
 │  ├─ picture_3.jpg
 │  ├─ picture_4.png
 │  ├─ picture_5.png
-│  └─ picture_6.png
+│  ├─ picture_6.png
+│  ├─ picture_7.png (current logo)
+│  └─ picture_8.png
 └─ __pycache__/
 ```
