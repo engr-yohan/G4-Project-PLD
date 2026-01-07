@@ -35,15 +35,18 @@ class AddressBook:
     def show_home(self):
         self.clear_content()
 
-        title_label = tk.Label(self.content_frame, text="Address Boook", font=("Arial", 20, "bold"), bg="#800000", fg="#FFD700",)
-        title_label.pack(pady=20)
+        title_label = tk.Label(self.content_frame, text="Address Book", font=("Arial", 20, "bold"), bg="#800000", fg="#FFD700",)
+        title_label.pack(expand=True, pady=20)
 
-        ttk.Button(self.content_frame, text="Add Contact", command=self.add_contact).pack(pady=5)
-        ttk.Button(self.content_frame, text="Edit Contact", command=self.edit_contact).pack(pady=5)
-        ttk.Button(self.content_frame, text="Delete Contact", command=self.delete_contact).pack(pady=5)
-        ttk.Button(self.content_frame, text="View Contacts", command=self.view_contacts).pack(pady=5)
-        ttk.Button(self.content_frame, text="Search Contacts", command=self.search_contacts).pack(pady=5)
-        ttk.Button(self.content_frame, text="Exit", command=self.exit_app).pack(pady=20)
+        button_frame = tk.Frame(self.content_frame, bg="#800000")
+        button_frame.pack(expand=True, pady=20)
+
+        ttk.Button(button_frame, text="Add Contact", command=self.add_contact).pack(pady=5)
+        ttk.Button(button_frame, text="Edit Contact", command=self.edit_contact).pack(pady=5)
+        ttk.Button(button_frame, text="Delete Contact", command=self.delete_contact).pack(pady=5)
+        ttk.Button(button_frame, text="View Contacts", command=self.view_contacts).pack(pady=5)
+        ttk.Button(button_frame, text="Search Contacts", command=self.search_contacts).pack(pady=5)
+        ttk.Button(button_frame, text="Exit", command=self.exit_app).pack(pady=20)
 
     def validate_name(self, name):
         """Validate name: not empy, only letters and spaces."""
@@ -83,10 +86,17 @@ class AddressBook:
         
         self.clear_content()
 
-        tk.Label(self.content_frame, text="Add Contact", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
+        # Center everything inside a dedicated wrapper that still lets the parent use pack
+        wrapper = tk.Frame(self.content_frame, bg="#800000")
+        wrapper.pack(expand=True, fill=tk.BOTH)
 
-        form_frame = tk.Frame(self.content_frame, bg="#800000")
-        form_frame.pack(pady=10)
+        center = tk.Frame(wrapper, bg="#800000")
+        center.pack(expand=True)
+
+        tk.Label(center, text="Add Contact", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=20)
+
+        form_frame = tk.Frame(center, bg="#800000")
+        form_frame.pack()
 
         tk.Label(form_frame, text="First Name:", bg="#800000", fg="#FFD700").grid(row=0, column=0, sticky="e", padx=5, pady=5)
         first_entry = tk.Entry(form_frame)
@@ -132,10 +142,10 @@ class AddressBook:
             messagebox.showinfo("Success", "Contact added successfully.")
             self.show_home()
 
-        action_frame = tk.Frame(self.content_frame, bg="#800000")
-        action_frame.pack(pady=10)
-        ttk.Button(action_frame, text="Add", command=submit).grid(row=0, column=0, padx=5)
-        ttk.Button(action_frame, text= "Back", command=self.show_home).grid(row=0, column=1, padx=5)
+        action_frame = tk.Frame(center, bg="#800000")
+        action_frame.pack(pady=20)
+        ttk.Button(action_frame, text="Add", command=submit).pack(side=tk.LEFT, padx=8)
+        ttk.Button(action_frame, text="Back", command=self.show_home).pack(side=tk.LEFT, padx=8)
 
     def edit_contact(self):
         if not self.contacts:
@@ -144,11 +154,17 @@ class AddressBook:
         
         self.clear_content()
 
-        tk.Label(self.content_frame, text="Edit Contact", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=10)
+        wrapper = tk.Frame(self.content_frame, bg="#800000")
+        wrapper.pack(expand=True, fill=tk.BOTH)
+
+        center = tk.Frame(wrapper, bg="#800000")
+        center.pack(expand=True)
+    
+        tk.Label(center, text="Edit Contact", font=("Arial", 16, "bold"), bg="#800000", fg="#FFD700").pack(pady=20)
 
         # Contact Selection
-        select_frame = tk.Frame(self.content_frame, bg="#800000")
-        select_frame.pack(pady=5)
+        select_frame = tk.Frame(center, bg="#800000")
+        select_frame.pack(pady=8)
 
         tk.Label(select_frame, text= "Select Contact:", bg="#800000", fg="#FFD700").grid(row=0, column=0, padx=5, pady=5)
         options = [f"{i+1}. {c['first']} {c['last']}" for i, c in enumerate(self.contacts)]
@@ -157,7 +173,7 @@ class AddressBook:
         combo.grid(row=0, column=1, padx=5, pady=5)
 
         # Prefilled Form
-        form_frame = tk.Frame(self.content_frame, bg="#800000")
+        form_frame = tk.Frame(center, bg="#800000")
         form_frame.pack(pady=10)
 
         tk.Label(form_frame, text="First Name:", bg="#800000", fg="#FFD700").grid(row=0, column=0, sticky="e", padx=5, pady=5)
@@ -234,10 +250,10 @@ class AddressBook:
             messagebox.showinfo("Success", "Contact edited successfully.")
             self.show_home()
 
-        action_frame = tk.Frame(self.content_frame, bg="#800000")
-        action_frame.pack(pady=10)
-        ttk.Button(action_frame, text="Save", command=submit).grid(row=0, column=0, padx=5)
-        ttk.Button(action_frame, text="Back", command=self.show_home).grid(row=0, column=1, padx=5)
+        action_frame = tk.Frame(center, bg="#800000")
+        action_frame.pack(pady=16)
+        ttk.Button(action_frame, text="Save", command=submit).pack(side=tk.LEFT, padx=8)
+        ttk.Button(action_frame, text="Back", command=self.show_home).pack(side=tk.LEFT, padx=8)
 
     def delete_contact(self):
         if not self.contacts:
