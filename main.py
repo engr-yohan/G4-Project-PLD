@@ -320,53 +320,59 @@ class AddressBook:
 
         tk.Label(controls, text="Search by:", bg="#800000", fg="#FFD700").grid(row=0, column=0, padx=5, pady=5, sticky="e")
         search_type = tk.StringVar(value="first name")
-        ttk.Combobox(controls, textvariable=search_type, values=["first name", "last name", "address", "contact number"], state="readonly").grid(row=0, column=1, padx=5, pady=5)
+        stype_combo = ttk.Combobox(controls, textvariable=search_type, values=["first name", "last name", "address", "contact number"], state="readonly")
+        stype_combo.grid(row=0, column=1, padx=5, pady=5)
 
         tk.Label(controls, text="Query:", bg="#800000", fg="#FFD700").grid(row=0, column=2, padx=5, pady=5, sticky="e")
-        query_entry = tk.Entry(controls)
+        query_var = tk.StringVar()
+        query_entry = tk.Entry(controls, textvariable=query_var)
         query_entry.grid(row=0, column=3, padx=5, pady=5)
+        query_entry.focus_set()
 
-        results_text = tk.Text(self.content_frame, bg="#FFD700", fg="#800000", font=("Arial", 10))
+        results_text = tk.Text(self.content_frame, bg="#FFD700", fg="#800000", font=("Arial", 10), height=15)
         results_text.pack(expand=True, fill=tk.BOTH, padx=10, pady=10)
         results_text.config(state=tk.DISABLED)
 
-        def submit():
+        def update_results():
             stype = search_type.get()
-            query = query_entry.get().strip().lower()
+            query = query_var.get().strip().lower()
             query_digits = self._sanitize_number(query)
-            if not query:
-                messagebox.showerror("Error", "Query cannot be empty.")
-                return
             
             self.contacts = get_all_contacts()
             
             results = []
-            for i, contact in enumerate(self.contacts, 1):
-                if stype == "first name" and query in contact["first"].lower():
-                    results.append((i, contact))
-                elif stype == "last name" and query in contact["last"].lower():
-                    results.append((i, contact))
-                elif stype == "address" and query in contact["address"].lower():
-                    results.append((i, contact))
-                elif stype == "contact number":
-                    sanitized = self._sanitize_number(contact["number"])
-                    if query_digits and query_digits in sanitized:
+            if query:
+                for i, contact in enumerate(self.contacts, 1):
+                    if stype == "first name" and query in contact["first"].lower():
                         results.append((i, contact))
+                    elif stype == "last name" and query in contact["last"].lower():
+                        results.append((i, contact))
+                    elif stype == "address" and query in contact["address"].lower():
+                        results.append((i, contact))
+                    elif stype == "contact number":
+                        sanitized = self._sanitize_number(contact["number"])
+                        if query_digits and query_digits in sanitized:
+                            results.append((i, contact))
                 
             results_text.config(state=tk.NORMAL)
             results_text.delete("1.0", tk.END)
 
-            if not results:
-                messagebox.showinfo("No Results", "No contacts match the query.")
+            if not query:
+                results_text.insert(tk.END, "Type to search to see matches.")
+            elif not results:
+                results_text.insert(tk.END, "No contacts match the query.")
             else:
                 for num, contact in results:
                     sanitized = self._sanitize_number(contact["number"])
-                    results_text.insert(tk.END,f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {sanitized}\n\n")
+                    results_text.insert(tk.END, f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {sanitized}\n\n")
             
             results_text.config(state=tk.DISABLED)
 
-        ttk.Button(controls, text="Search", command=submit).grid(row=0, column=4, padx=5)
-        ttk.Button(controls, text="Back", command=self.show_home).grid(row=0, column=5, padx=5)
+        query_var.trace_add("write", lambda *_: update_results())
+        stype_combo.bind("<<ComboboxSelected>>", lambda _e: update_results())
+
+        ttk.Button(controls, text="Back", command=self.show_home).grid(row=0, column=4, padx=5)
+        update_results()
         
     def exit_app(self):
         self.root.quit()
