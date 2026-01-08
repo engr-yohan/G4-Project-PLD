@@ -349,7 +349,7 @@ class AddressBook:
         else:
             for i, contact in enumerate(self.contacts, 1):
                 sanitized = self._sanitize_number(contact["number"])
-                text.insert(tk.END, f"{i}. {contact['first'].title()} {contact['last'].title()}\n Address: {contact['address'].title()}\n Number: {sanitized}\n\n")
+                text.insert(tk.END, f"{i}. Name: {contact['first'].title()} {contact['last'].title()}\n Address: {contact['address'].title()}\n Number: {sanitized}\n\n")
             
         text.config(state=tk.DISABLED)
 
