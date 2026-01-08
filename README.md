@@ -4,6 +4,7 @@ This group project is an address book application built primarily in Python, des
 
 ### Known Issues
 - **delete()**: The data is never shown, and you can only remove entries by knowing their designated number in the address book.
+- **Special cases**: Cannot handle it in this address book.
 
 ## Project Structure
 ```
