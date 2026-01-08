@@ -30,10 +30,22 @@ def add_contact(first_name, last_name, address, phone_number):
     cursor.execute('''
                    INSERT INTO contacts (first_name, last_name, address, phone_number)
                    VALUES (?, ?, ?, ?)
-                   ''', (first_name, last_name, address, phone_number))
+                   ''', (first_name.title(), last_name.title(), address.title(), phone_number))
     
     conn.commit()
     conn.close()
+
+def phone_exists(phone_number, exclude_id=None):
+    conn = get_connection()
+    cursor = conn.cursor()
+
+    if exclude_id is None:
+        cursor.execute('SELECT 1 FROM contacts WHERE phone_number = ? LIMIT 1', (phone_number,))
+    else:
+        cursor.execute('SELECT 1 FROM contacts WHERE phone_number = ? AND id != ? LIMIT 1', (phone_number, exclude_id))
+    exists = cursor.fetchone() is not None
+    conn.close()
+    return exists
 
 def get_all_contacts():
     conn = get_connection()
@@ -48,9 +60,9 @@ def get_all_contacts():
     for row in rows:
         contacts.append({
             "id": row[0],
-            "first": row[1],
-            "last": row[2],
-            "address": row[3],
+            "first": (row[1] or "").title(),
+            "last": (row[2] or "").title(),
+            "address": (row[3] or "").title(),
             "number": row[4]
         })
     return contacts
@@ -63,7 +75,7 @@ def update_contact(contact_id, first_name, last_name, address, phone_number):
                    UPDATE contacts
                    SET first_name = ?, last_name = ?, address = ?, phone_number = ?
                    WHERE id = ?
-                   ''', (first_name, last_name, address, phone_number, contact_id))
+                   ''', (first_name.title(), last_name.title(), address.title(), phone_number, contact_id))
     
     conn.commit()
     conn.close()

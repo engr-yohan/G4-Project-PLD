@@ -2,7 +2,7 @@ import tkinter as tk
 import re
 import os
 from tkinter import messagebox, simpledialog, ttk
-from database import initialize_database, add_contact, get_all_contacts, update_contact, delete_contact
+from database import initialize_database, add_contact, get_all_contacts, update_contact, delete_contact, phone_exists
 
 class AddressBook:
     def __init__(self):
@@ -176,8 +176,12 @@ class AddressBook:
                 if not valid_number: error_msg += msg_number + "\n"
                 messagebox.showerror("Validation Error", error_msg)
                 return
+            
+            if phone_exists(sanitized_number):
+                messagebox.showerror("Duplicate Number", "A contact number already exists.")
+                return
                 
-            add_contact(first.strip(), last.strip(), address.strip(), sanitized_number)
+            add_contact(first.strip().title(), last.strip().title(), address.strip().title(), sanitized_number)
             self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact added successfully.")
             self.show_home()
@@ -284,8 +288,13 @@ class AddressBook:
                 if not valid_number: error_msg += msg_number + "\n"
                 messagebox.showerror("Validation Error", error_msg)
                 return
+            
+            # Prevent assigning duplicate contact number
+            if phone_exists(sanitized_number, exclude_id=contact["id"]):
+                messagebox.showerror("Duplicate Number", "Another contact already uses this contact number.")
+                return
 
-            update_contact(contact["id"], first.strip(), last.strip(), address.strip(), sanitized_number)
+            update_contact(contact["id"], first.strip().title(), last.strip().title(), address.strip().title(), sanitized_number)
             self.contacts = get_all_contacts()
             messagebox.showinfo("Success", "Contact edited successfully.")
             self.show_home()
@@ -340,7 +349,7 @@ class AddressBook:
         else:
             for i, contact in enumerate(self.contacts, 1):
                 sanitized = self._sanitize_number(contact["number"])
-                text.insert(tk.END, f"{i}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {sanitized}\n\n")
+                text.insert(tk.END, f"{i}. {contact['first'].title()} {contact['last'].title()}\n Address: {contact['address'].title()}\n Number: {sanitized}\n\n")
             
         text.config(state=tk.DISABLED)
 
@@ -404,7 +413,7 @@ class AddressBook:
             else:
                 for num, contact in results:
                     sanitized = self._sanitize_number(contact["number"])
-                    results_text.insert(tk.END, f"{num}. {contact['first']} {contact['last']}\n Address: {contact['address']}\n Number: {sanitized}\n\n")
+                    results_text.insert(tk.END, f"{num}. {contact['first'].title()} {contact['last'].title()}\n Address: {contact['address'].title()}\n Number: {sanitized}\n\n")
             
             results_text.config(state=tk.DISABLED)
 
