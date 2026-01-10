@@ -158,6 +158,117 @@ Handles all database operations using SQLite:
 
 ---
 
+## Future Improvements
+
+1. **Enhanced Delete operation**:
+    - Display contact list for selection before deletion
+    - Show contact preview before confirming deletion
+    - Undo functionality for recent deletions
+
+2. **Special Character Support**:
+    - Update validation regex to support international character sets
+    - Allow hyphens, apostrophes, and Unicode characters in names
+    - Support for accented characters
+
+3. **Advanced Search**:
+    - Filter by multiple criteria (name, phone, address)
+    - Sort contacts by name, date added, or phone number
+    - Case-insensitive searching
+
+4. **Data Management**:
+    - Export contacts to CSV or Excel format
+    - Import contacts from extermal files
+    - Backup database functionality
+    - Data encryption for sensitive information
+
+5. **Contact Organization**:
+    - Categorize contacts (Work, Personal, Family, Friends, etc.)
+    - Tags and labels for better organization
+    - Favorites or starred contacts.
+
+6. **Extended Contact fields**:
+    - Email address field
+    - Multiple phone numbers per contact
+    - Date of birth for birthday reminders
+    - Notes or additional comments
+
+7. **User Experience Improvements**:
+    - Dark mode theme option
+    - Customizable color schemes
+    - Keyboard shortcuts for common operations
+    - Contact duplication detection
+
+---
+
+## Usage Guide
+
+### Adding a Contact
+1. Click **"Add Contact"** from home menu
+2. Enter the following information:
+    - **First Name**: Letters and spaces only (e.g., "John")
+    - **Last Name**: Letters and spaces only (e.g., "Smith")
+    - **Address**: Any text (e.g., "123 Main Street, Apartment 4B, New York, NY 10001")
+    - **Phone NUmber**: Digits only, maximum 11 digits (e.g., "09876543210")
+3. Phone number validation will ensure no duplicate numbers exist
+4. Click **OK** to save the contact; **Cancel** to discard
+
+
+### Viewing All Contacts
+1. Click **"View Contacts"** to see a list of all saved contacts
+2. Contacts are displayed in a scrollable window with:
+    - Contact ID number
+    - Full name (First + Last)
+    - Address
+    - Phone number
+3. Click **Close** to return to the home menu
+
+### Searching for Contacts
+1. Clock **"Search Contacts"** form the home menu
+2. Enter a name or phone number to search
+3. Results will be displayed if matches are found
+4. Returns all contacts with matching first name, last name, or phone number
+
+### Editing a Contact
+1. Click **"Edit Contact"** from the home menu
+2. A dialog will prompt you to enter the contact ID to modify (you can view all contacts first to find the ID)
+3. Modify any of the contact fields:
+    - First name
+    - Last name
+    - Address
+    - Phone number
+4. Changes are saved immediately to the database upon confirmation
+
+### Deleting a Contact
+1. Click **"Delete Contact"** from the home menu
+2. A dialog will prompt you to enter the contactID to remove
+3. Note: You may need to view all contacts first to find the correct ID
+4. Confirm the deletion when prompted
+5. The contact will be permanently rmeoved from the database.
+
+---
+
+## Troubleshooting
+
+### Application Won't Start
+- Ensure Python 3.6+ is installed: `python -- version`
+- Verify Tkinter is installed: `python -m tkinter` (should open a test window)
+- Check that all files are in the correct directory
+
+### Database Error
+- Delete `app_database.db` to reset the database (all contacts will be lost)
+- The database will not be automatically recreated on next run
+
+### Logo Not Displaying
+- Ensure `picture_logo/picture_&.png` exists in the correct directory
+- If missing, copy and PNG file to that location and rename it to picture_7.png
+- Application will still work without the logo, displaying text instead
+
+### Validation Errors
+- **Name validation failed**: Remove special characters, use only letters and spaces
+- **Phone validation failed**: use only digits (0-9), maximum 11 digits
+- **Duplicate phone**: The phone number already exists; check with "View Contacts"
+---
+
 ## Project Participants
 
 ### Collaborators
